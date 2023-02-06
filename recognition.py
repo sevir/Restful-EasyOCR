@@ -4,9 +4,11 @@ import numpy as np
 import cv2
 import easyocr
 import os
+import tempfile
+import wget
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'easyocr_vdt');
-reader = easyocr.Reader(['en'], gpu=False)
+reader = easyocr.Reader(['es','en'], gpu=False)
 
 app = Flask(__name__)
 
@@ -32,6 +34,22 @@ def data_process(data):
     """
     image_url = data["image_url"]
     secret_key = data["secret_key"]
+    file_type = data["file_type"] or "image"
+
+    if file_type == "pdf":
+        #If file_type is PDF, then download
+        tmp_file = tempfile.NamedTemporaryFile(delete=False)
+        wget.download(image_url,tmp_file.name)
+        tmp_dir = tempfile.TemporaryDirectory()
+
+        result_convert = os.system('pdftoppm -jpeg -r 300 {tmp_file.name} {tmp_file.name}')
+        if result_convert > 0:
+            raise Exception("Problem converting pdf to jpeg")
+        image_url = "{tmp_file.name}-1.jpg"
+
+        #Remove tmp_file
+        os.unlink(tmp_file.name)
+
 
     return url_to_image(image_url), secret_key
 
@@ -43,7 +61,7 @@ def recognition(image):
     :return:
     """
     results = []
-    texts = reader.readtext(image)
+    texts = reader.readtext(image, rotation_info = [0,90,180,270], workers = 2)
     for (bbox, text, prob) in texts:
         output = {
             "coordinate": [list(map(float, coordinate)) for coordinate in bbox],
