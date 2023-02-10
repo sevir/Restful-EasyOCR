@@ -5,7 +5,7 @@ import cv2
 import easyocr
 import os
 import tempfile
-import wget
+import requests
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'easyocr_vdt');
 reader = easyocr.Reader(['es','en'], gpu=False)
@@ -39,13 +39,17 @@ def data_process(data):
     if file_type == "pdf":
         #If file_type is PDF, then download
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
-        wget.download(image_url,tmp_file.name)
+        #Download the file
+        r = requests.get(image_url, allow_redirects=True)
+        open(tmp_file.name, 'wb').write(r.content)
+
         tmp_dir = tempfile.TemporaryDirectory()
 
-        result_convert = os.system('pdftoppm -jpeg -r 300 {tmp_file.name} {tmp_file.name}')
+        #Convert to image
+        result_convert = os.system(f'pdftoppm -jpeg -r 300 {tmp_file.name} {tmp_file.name}')
         if result_convert > 0:
             raise Exception("Problem converting pdf to jpeg")
-        image_url = "{tmp_file.name}-1.jpg"
+        image_url = f'file://{tmp_file.name}-1.jpg'
 
         #Remove tmp_file
         os.unlink(tmp_file.name)

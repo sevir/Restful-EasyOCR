@@ -33,12 +33,12 @@ RUN cd "$service_home" \
 
 RUN pip install Flask
 
-RUN pip3 install --upgrade pip && pip3 install packaging
-
 RUN apt-get update --fix-missing -y && apt-get install -y poppler-utils \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/li
+
+RUN pip3 install --upgrade pip && pip3 install packaging wget
 
 ADD ./recognition.py /home/ubuntu/
 WORKDIR /home/ubuntu/
