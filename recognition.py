@@ -46,7 +46,7 @@ def data_process(data):
         tmp_dir = tempfile.TemporaryDirectory()
 
         #Convert to image
-        result_convert = os.system(f'pdftoppm -jpeg -r 300 {tmp_file.name} {tmp_file.name}')
+        result_convert = os.system(f'pdftoppm -jpeg -r 100 {tmp_file.name} {tmp_file.name}')
         if result_convert > 0:
             raise Exception("Problem converting pdf to jpeg")
         image_url = f'file://{tmp_file.name}-1.jpg'
