@@ -4,14 +4,16 @@ If you do not know, EasyOCR is an open-sourced project (written in Python, hoste
 
 This small repository helps wrapping the EasyOCR functionalities inside Restful API with Flask. So that, you do not need to use Python in your stack to work with EasyOCR.
 
+This is forked from voduytuan/Restful-EasyOCR repository
+
 ## Run with default Docker Hub image
 
-The fastest way to run is using provided image at https://hub.docker.com/r/voduytuan/restful-easyocr (or `docker pull voduytuan/restful-easyocr`). 
+The fastest way to run is using provided image at https://hub.docker.com/r/sevir/restful-easyocr (or `docker pull sevir/restful-easyocr`). 
 
 ### Start Docker Container
 
 ```shell
-$ > docker run -d -i --name myeasyocr -p 2000:2000 -e SECRET_KEY=easyocr_vdt voduytuan/restful-easyocr
+$ > docker run -d -i --name myeasyocr -p 2000:2000 -e SECRET_KEY=easyocr_vdt sevir/restful-easyocr
 ```
 
 After starting container, please wait few seconds (about 30s) so that the detection model loaded. By default, this container will be accessed by port `2000`. 
@@ -31,6 +33,7 @@ After starting container, please wait few seconds (about 30s) so that the detect
   - JSON Object with format:
 
     - `image_url` - (String) : URL Of image will be processed
+    - `file_type` - (String) : "image" or "pdf"
     - `secret_key` - (String): Secret Key of server. If you're using my public image from hub.docker.com, the secret key will be "easyocr_vdt". Change this key by set the value of environment variable `SECRET_KEY` in `docker run...` command.
 
   - Example of a payload:
@@ -38,6 +41,7 @@ After starting container, please wait few seconds (about 30s) so that the detect
     ```
     {
     	"secret_key": "easyocr_vdt",
+      "file_type": "image",
     	"image_url": "https://via.placeholder.com/300.jpg?text=Hello_world"
     }
     ```
@@ -90,12 +94,12 @@ After starting container, please wait few seconds (about 30s) so that the detect
 
 ## Build your own docker image
 
-By default, provided image is only detect ENGLISH text on input photo. If you want to change the language to detect, you can clone my repository (https://github.com/voduytuan/Restful-EasyOCR), then edit file `recognition.py` (in line number 9), you can change the array of detected languages by replacing the `['en']` array with your language array, such as `['vi', 'en']` (`EasyOCR` supports detect multiple language)
+By default, provided image is only detect ENGLISH text on input photo. If you want to change the language to detect, you can clone my repository (https://github.com/sevir/Restful-EasyOCR.git), then edit file `recognition.py` (in line number 9), you can change the array of detected languages by replacing the `['en']` array with your language array, such as `['vi', 'en']` (`EasyOCR` supports detect multiple language)
 
 To know all the supported languages, you can view the repository EasyOCR (https://github.com/JaidedAI/EasyOCR) or access URL https://github.com/JaidedAI/EasyOCR/tree/master/easyocr/character to see full list, remove the suffix "`_char.txt`" from file names, you will have the name of language to set to your array. Such as: `vi_char.txt` becomes `vi`...
 
 ```bash
-$ git clone https://github.com/voduytuan/Restful-EasyOCR
+$ git clone https://github.com/sevir/Restful-EasyOCR.git
 $ cd Restful-EasyOCR/
 
 (Now, you can edit file recognition.py with your needs)
